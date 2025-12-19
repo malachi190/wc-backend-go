@@ -1,0 +1,95 @@
+# Taskfile.yml
+version: "3"
+
+vars:
+  BIN_NAME: app # compiled binary
+  MAIN_PKG: ./cmd/ # package that contains main()
+  DOCKER_IMG: myapp:latest # local Docker tag
+  DB_URL: postgres://postgres:1234@localhost:5432/watchcircle_test?sslmode=disable
+  MIGRATE: golang-migrate # or migrate, goose, etc.
+
+tasks:
+  # ---------- Development ----------
+  build:
+    desc: Compile the server binary
+    cmds:
+      - go build -o {{.BIN_NAME}} {{.MAIN_PKG}}
+
+  run:
+    desc: Start the server (hot-reload with air if installed)
+    deps: [build]
+    cmds:
+      - ./{{.BIN_NAME}}
+
+  dev:
+    desc: Run with live reload (requires github.com/cosmtrek/air)
+    cmds:
+      - air -c .air.toml
+
+  stop:
+    desc: Kill running binary (port 8080 by default)
+    cmds:
+      - lsof -ti:8080 | xargs -r kill -9
+
+  # ---------- Dependencies ----------
+  install:
+    desc: Install/update a Go module (usage --> task install PKG=github.com/foo/bar)
+    cmds:
+      - go get -u {{.PKG}}
+
+  tidy:
+    desc: Tidy modules
+    cmds:
+      - go mod tidy
+
+  # ---------- Docker ----------
+  docker:build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t {{.DOCKER_IMG}} .
+
+  docker:run:
+    desc: Run container from built image (maps port 8080)
+    cmds:
+      - docker run --rm -p 8080:8080 --name {{.BIN_NAME}} {{.DOCKER_IMG}}
+
+  docker:stop:
+    desc: Stop running container
+    cmds:
+      - docker stop {{.BIN_NAME}} || true
+
+# ---------- Database (goose) ----------
+  db:create-migration:   #  task db:create-migration NAME=create_users
+   desc: Create a new SQL migration (timestamped)
+   cmds:
+    - goose -dir database/migrations create {{.NAME}} sql
+
+  db:migrate: #  task db:migrate
+   desc: Apply all pending migrations
+   cmds:
+    - goose -dir database/migrations up
+
+  db:rollback: #  task db:rollback
+   desc: Roll back the *last* migration (1 step)
+   cmds:
+    - goose -dir database/migrations down
+
+  db:status: #  task db:status
+   desc: List applied / pending migrations
+   cmds:
+    - goose -dir database/migrations status
+
+  db:reset: #  task db:reset  (danger – wipes schema)
+   desc: Roll back *all* migrations
+   cmds:
+    - goose -dir database/migrations reset
+
+  # ---------- Utilities ----------
+  clean:
+    desc: Remove built binary
+    cmds:
+      - rm -f {{.BIN_NAME}}
+
+  default:
+    cmds:
+      - task --list
