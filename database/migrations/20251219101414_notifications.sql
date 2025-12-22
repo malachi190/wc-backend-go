@@ -1,4 +1,4 @@
--- up
+-- +goose Up
 CREATE TABLE notifications (
     id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -12,3 +12,12 @@ CREATE TABLE notifications (
 
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX idx_notifications_read    ON notifications(read);
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TABLE IF EXISTS notifications;
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd

@@ -1,4 +1,4 @@
--- up
+-- +goose Up
 CREATE TABLE circles (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name         TEXT NOT NULL,
@@ -16,3 +16,14 @@ CREATE TRIGGER trg_circles_updated
     BEFORE UPDATE ON circles
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
+
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TRIGGER IF EXISTS trg_circles_updated ON circles;
+DROP TABLE IF EXISTS circles;
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd
