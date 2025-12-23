@@ -1,4 +1,4 @@
--- up
+-- +goose Up
 CREATE TABLE messages (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     circle_id    UUID NOT NULL REFERENCES circles(id) ON DELETE CASCADE,
@@ -19,3 +19,13 @@ CREATE TRIGGER trg_messages_updated
     BEFORE UPDATE ON messages
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TRIGGER IF EXISTS trg_messages_updated ON messages;
+DROP TABLE IF EXISTS messages;
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd

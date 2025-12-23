@@ -1,13 +1,13 @@
 package handlers
 
+import "github.com/malachi190/watchcircle/repository"
+
 type Handler struct {
 	Auth *AuthHandler
 }
 
-type AuthHandler struct{}
-
-func New() *Handler {
+func New(repo *repository.Repo) *Handler {
 	return &Handler{
-		Auth: &AuthHandler{},
+		Auth: NewAuthHandler(repo),
 	}
 }

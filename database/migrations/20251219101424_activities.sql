@@ -1,4 +1,4 @@
--- up
+-- +goose Up
 CREATE TABLE activities (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -12,3 +12,12 @@ CREATE TABLE activities (
 
 CREATE INDEX idx_activities_user_id    ON activities(user_id);
 CREATE INDEX idx_activities_created_at ON activities(created_at);
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TABLE IF EXISTS activities;
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd

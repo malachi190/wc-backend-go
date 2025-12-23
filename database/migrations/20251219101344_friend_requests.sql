@@ -1,4 +1,4 @@
--- up
+-- +goose Up
 CREATE TABLE friend_requests (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     sender_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -16,3 +16,14 @@ CREATE TRIGGER trg_friend_requests_updated
     BEFORE UPDATE ON friend_requests
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
+
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TRIGGER IF EXISTS trg_friend_requests_updated ON friend_requests;
+DROP TABLE IF EXISTS friend_requests;
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd

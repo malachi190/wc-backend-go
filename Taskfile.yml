@@ -6,7 +6,7 @@ vars:
   MAIN_PKG: ./cmd/ # package that contains main()
   DOCKER_IMG: myapp:latest # local Docker tag
   DB_URL: postgres://postgres:1234@localhost:5432/watchcircle_test?sslmode=disable
-  MIGRATE: golang-migrate # or migrate, goose, etc.
+  MIGRATE: goose # or migrate, goose, etc.
 
 tasks:
   # ---------- Development ----------
@@ -67,22 +67,22 @@ tasks:
   db:migrate: #  task db:migrate
    desc: Apply all pending migrations
    cmds:
-    - goose -dir database/migrations up
+    - GOOSE_DRIVER=postgres GOOSE_DBSTRING={{.DB_URL}} goose -dir database/migrations up
 
   db:rollback: #  task db:rollback
    desc: Roll back the *last* migration (1 step)
    cmds:
-    - goose -dir database/migrations down
+    - GOOSE_DRIVER=postgres GOOSE_DBSTRING={{.DB_URL}} goose -dir database/migrations down
 
   db:status: #  task db:status
    desc: List applied / pending migrations
    cmds:
-    - goose -dir database/migrations status
+    - GOOSE_DRIVER=postgres GOOSE_DBSTRING={{.DB_URL}} goose -dir database/migrations status
 
   db:reset: #  task db:reset  (danger – wipes schema)
    desc: Roll back *all* migrations
    cmds:
-    - goose -dir database/migrations reset
+    - GOOSE_DRIVER=postgres GOOSE_DBSTRING={{.DB_URL}} goose -dir database/migrations reset
 
   # ---------- Utilities ----------
   clean:

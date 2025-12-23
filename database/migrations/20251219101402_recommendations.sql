@@ -1,4 +1,4 @@
--- up
+-- +goose Up
 CREATE TABLE recommendations (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     from_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -20,3 +20,14 @@ CREATE TRIGGER trg_recommendations_updated
     BEFORE UPDATE ON recommendations
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
+
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TRIGGER IF EXISTS trg_recommendations_updated ON recommendations;
+DROP TABLE IF EXISTS recommendations;
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd
