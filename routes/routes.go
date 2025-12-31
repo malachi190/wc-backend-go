@@ -3,11 +3,13 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/malachi190/watchcircle/handlers"
+	"github.com/malachi190/watchcircle/middleware"
 )
 
 func Routes(handler *handlers.Handler) func(*gin.Engine) {
 	return func(r *gin.Engine) {
-		// Add Request Logger and CORS middlwares
+		// Add Request Logger
+		r.Use(middleware.NewRequestLogger())
 
 		// Health Check
 		r.GET("/health", func(ctx *gin.Context) {
@@ -19,9 +21,13 @@ func Routes(handler *handlers.Handler) func(*gin.Engine) {
 		// Versioning
 		api := r.Group("/api/v1")
 
+		// Auth
 		{
-			api.GET("/test")
+			api.POST("/register", handler.Auth.Register)
+			api.POST("/verify-email", handler.Auth.VerifyEmail)
+			api.POST("/resend-otp", handler.Auth.ResendOtp)
+			api.POST("/login", handler.Auth.Login)
+			api.GET("/refetch-token", handler.Auth.FetchRefreshToken)
 		}
-
 	}
 }

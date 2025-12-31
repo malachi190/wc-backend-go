@@ -36,6 +36,11 @@ type FirebaseConfig struct {
 	PrivateKey  string `koanf:"private_key"`
 }
 
+type RedisConfig struct {
+	Port string `koanf:"port"`
+	Host string `koanf:"host"`
+}
+
 type Config struct {
 	DatabaseUrl string         `koanf:"database_url"`
 	App         AppConfig      `koanf:"app"`
@@ -43,6 +48,7 @@ type Config struct {
 	Jwt         JwtConfig      `koanf:"jwt"`
 	TMDB        TmdbConfig     `koanf:"tmdb"`
 	Firebase    FirebaseConfig `koanf:"firebase"`
+	Redis       RedisConfig    `koanf:"redis"`
 }
 
 func LoadConfig() (*Config, error) {
