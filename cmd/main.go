@@ -79,7 +79,7 @@ func main() {
 	repo := repository.New(cfg, db, models.New(), service, RDB, newMlr)
 
 	// Routes
-	r := routes.Routes(handlers.New(repo))
+	r := routes.Routes(handlers.New(repo), cfg)
 
 	// Server
 	srv := server.New(fmt.Sprintf(":%s", cfg.App.Port), r)
